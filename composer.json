@@ -1,4 +1,15 @@
 {
+    "name": "paza/gitlabcard",
+    "description": "cardmaker",
+    "keywords": ["pdf", "agile", "cards", "gitlab"],
+    "type": "library",
+    "license": "LGPL",
+    "authors": [
+        {
+            "name": "Patrick Zahnd",
+            "email": "pazaaa@gmail.com"
+        }
+    ],
     "require": {
         "silex/silex": "1.0.*",
         "kriswallsmith/buzz": "0.6",
