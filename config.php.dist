@@ -1,0 +1,6 @@
+<?php
+
+$cardMakerConfig = array(
+    'apiPath'       => 'https://gitlab.yoursite.ch/api/v3',
+    'cardmakerPath' => 'http://cardmaker.patrickzahnd.ch/cards.pdf',
+);

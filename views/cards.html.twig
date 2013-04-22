@@ -1,0 +1,72 @@
+{% extends "base.html.twig" %}
+
+{% block content %}
+
+    <form id="gitlab" action="{{ path('cards.pdf') }}" method="GET">
+
+        <input type="hidden" name="projectId" value="{{ projectId }}" />
+
+        <div>
+            <label>
+                Cards per page
+                <select name="cardsPerPage">
+                    <option>1</option>
+                    <option>2</option>
+                    <option>4</option>
+                    <option selected="selected">8</option>
+                </select>
+            </label>
+        </div>
+
+        <div>
+            <label>
+                Show numbers
+                <input type="checkbox" name="showNumbers" />
+            </label>
+        </div>
+
+        <div>
+            <label>
+                Cropmarks
+                <input type="checkbox" name="cropmarks" checked="checked" />
+            </label>
+        </div>
+
+        <div>
+            <label>
+                Open only
+                <input type="checkbox" name="openonly" checked="checked" />
+            </label>
+        </div>
+
+        <div>
+            <label>
+                Alignment
+                <select name="align">
+                    <option value="C">Centered</option>
+                    <option value="L">Left</option>
+                </select>
+            </label>
+        </div>
+
+        <div>
+            <label>
+                Milestones
+                <select name="milestones[]" multiple="multiple">
+                    {% for milestone in milestones %}
+
+                        <option value="{{ milestone.id }}">
+                            {{ milestone.title }}
+                        </option>
+
+                    {% endfor %}
+                </select>
+            </label>
+        </div>
+
+        <div>
+            <input type="submit" value="submit" class="submit" />
+        </div>
+    </form>
+
+{% endblock %}

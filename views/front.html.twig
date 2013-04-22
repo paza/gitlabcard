@@ -1,0 +1,19 @@
+{% extends "base.html.twig" %}
+
+{% block content %}
+
+    <form id="gitlab" action="{{ path('home') }}" method="POST">
+        <div>
+            <label>
+                <input type="text" name="privateToken" value="" />
+                Private token <br />
+                <i><small>Found under <a href="ddd://gitlab.liip.ch/profile/account">https://gitlab.liip.ch/profile/account</a></small></i>
+            </label>
+        </div>
+        
+        <div>
+            <input type="submit" value="submit" class="submit" />
+        </div>
+    </form>
+
+{% endblock %}

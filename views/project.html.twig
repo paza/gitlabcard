@@ -1,0 +1,30 @@
+{% extends "base.html.twig" %}
+
+{% block content %}
+
+    <form id="gitlab" action="{{ path('cards') }}" method="GET">
+        <div>
+            <label>
+                Project
+                <select name="projectId">
+                    {% for project in projects %}
+
+                        <option value="{{ project.id }}">
+                            {% if project.namespace %}
+                                {{ project.namespace.name }} /
+                            {% endif %}
+
+                            {{ project.name }}
+                        </option>
+
+                    {% endfor %}
+                </select>
+            </label>
+        </div>
+        
+        <div>
+            <input type="submit" value="submit" class="submit" />
+        </div>
+    </form>
+
+{% endblock %}
