@@ -13,6 +13,12 @@ The Software and Data in the vendor folder is distributed under its respective l
 
 # SETUP
 
+Install composer: http://getcomposer.org/download/
+
 ```sh
+# install dependencies
 composer install
+
+# create and modify config file
+cp config.php.dist config.php
 ```
