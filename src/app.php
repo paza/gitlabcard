@@ -58,20 +58,31 @@ $app->match('/', function(Request $request) use($app, $cardMakerConfig) {
     }
 
     $privateToken = $request->get('privateToken');
+    $gitlabPath = $request->get('gitlabPath');
 
-    if (!empty($privateToken)) {
-        $url      = vsprintf('%s/projects?private_token=%s&per_page=1', array($cardMakerConfig['apiPath'], $privateToken));
+    if (!empty($privateToken) && !empty($gitlabPath)) {
+        
+        $url      = vsprintf('%s/projects?private_token=%s&per_page=1', array($gitlabPath, $privateToken));
         $response = json_decode(@file_get_contents($url));
 
         $app['session']->set('private_token', $privateToken);
+        $app['session']->set('gitlab_path', $gitlabPath);
 
         if (!is_null($response)) {
             return $app->redirect($app['url_generator']->generate('project'));
         }
     }
 
+    if (empty($cardMakerConfig['apiPath'])) {
+        $cardMakerConfig['apiPath'] = '';
+    }
+    if (empty($gitlabPath)) {
+        $gitlabPath = $cardMakerConfig['apiPath'];
+    }
+
     return $app['twig']->render('front.html.twig', array(
-        'privateToken' => $privateToken,
+        'privateToken'  => $privateToken,
+        'gitlabPath'    => $gitlabPath,
     ));
 })
 ->bind('home');
@@ -82,12 +93,13 @@ $app->match('/', function(Request $request) use($app, $cardMakerConfig) {
 $app->get('/project', function(Request $request) use($app, $cardMakerConfig) {
 
     $privateToken = $app['session']->get('private_token');
+    $gitlabPath = $app['session']->get('gitlab_path');
 
-    if (empty($privateToken)) {
+    if (empty($privateToken) || empty($gitlabPath)) {
         return $app->redirect($app['url_generator']->generate('home'));
     }
 
-    $url      = vsprintf('%s/projects?private_token=%s&per_page=100', array($cardMakerConfig['apiPath'], $privateToken));
+    $url      = vsprintf('%s/projects?private_token=%s&per_page=100', array($gitlabPath, $privateToken));
     $projects = json_decode(@file_get_contents($url));
 
     return $app['twig']->render('project.html.twig', array(
@@ -102,8 +114,9 @@ $app->get('/project', function(Request $request) use($app, $cardMakerConfig) {
 $app->get('/cards', function(Request $request) use($app, $cardMakerConfig) {
 
     $privateToken = $app['session']->get('private_token');
+    $gitlabPath = $app['session']->get('gitlab_path');
 
-    if (empty($privateToken)) {
+    if (empty($privateToken) || empty($gitlabPath)) {
         return $app->redirect($app['url_generator']->generate('home'));
     }
 
@@ -111,7 +124,7 @@ $app->get('/cards', function(Request $request) use($app, $cardMakerConfig) {
         return $app->redirect($app['url_generator']->generate('project'));
     }
 
-    $url        = vsprintf('%s/projects/%d/milestones?private_token=%s&per_page=100', array($cardMakerConfig['apiPath'], $projectId, $privateToken));
+    $url        = vsprintf('%s/projects/%d/milestones?private_token=%s&per_page=100', array($gitlabPath, $projectId, $privateToken));
     $milestones = json_decode(file_get_contents($url));
 
     return $app['twig']->render('cards.html.twig', array(
@@ -127,8 +140,9 @@ $app->get('/cards', function(Request $request) use($app, $cardMakerConfig) {
 $app->get('/cards.pdf', function(Request $request) use($app, $cardMakerConfig) {
 
     $privateToken = $app['session']->get('private_token');
+    $gitlabPath = $app['session']->get('gitlab_path');
 
-    if (empty($privateToken)) {
+    if (empty($privateToken) || empty($gitlabPath)) {
         return $app->redirect($app['url_generator']->generate('home'));
     }
 
@@ -140,10 +154,10 @@ $app->get('/cards.pdf', function(Request $request) use($app, $cardMakerConfig) {
     $cropmarks          = $request->query->get('cropmarks', false);
     $openOnly           = $request->query->get('openonly', false);
     $cardsPerPage       = $request->query->get('cardsPerPage', 8);
-    $align              = $request->query->get('align', 'C');
+    $alignment          = $request->query->get('alignment', 'C');
     $milestones         = $request->query->get('milestones', array());
 
-    $url                = vsprintf('%s/projects/%d/issues?private_token=%s&per_page=100', array($cardMakerConfig['apiPath'], $projectId, $privateToken));
+    $url                = vsprintf('%s/projects/%d/issues?private_token=%s&per_page=100', array($gitlabPath, $projectId, $privateToken));
     $issues             = json_decode(file_get_contents($url));
     $issuesClean        = array();
 
@@ -189,7 +203,7 @@ $app->get('/cards.pdf', function(Request $request) use($app, $cardMakerConfig) {
         'cardsPerPage'  => $cardsPerPage,
         'showNumbers'   => (!empty($showNumbers) ? 1 : 0),
         'cropmark'      => (!empty($cropmarks) ? 1 : 0),
-        'align'         => $align,
+        'alignment'     => $alignment,
     ));
 
     header('Content-type: application/pdf');
