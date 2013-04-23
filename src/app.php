@@ -37,6 +37,12 @@ $app->register(new Silex\Provider\SessionServiceProvider());
 
 #$app['buzz'] = new Buzz\Browser(new Buzz\Client\Curl());
 
+$analytics = '';
+if (file_exists(__DIR__ . '/analytics.html')) {
+    $analytics = file_get_contents(__DIR__ . '/analytics.html');
+}
+$app["twig"]->addGlobal("analytics", $analytics);
+
 /**
  * Logout
  */

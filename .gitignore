@@ -3,3 +3,4 @@ vendor
 composer.phar
 cache
 config.php
+src/analytics.html
