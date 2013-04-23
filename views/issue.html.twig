@@ -1,4 +1,3 @@
-#{{ issue.id }} @ {{issue.milestone.title}} 
-({{ issue.labels|join(', ') }})
-
-{% if issue.closed is sameas(true) %}[CLOSED]{% else %}[OPEN]{% endif %} {{ issue.title }}
+<h2>#{{ issue.id }} @ {{issue.milestone.title}}</h2>
+<p>({{ issue.labels|join(', ') }})</p>
+<p>{% if issue.closed is sameas(true) %}[CLOSED]{% else %}[OPEN]{% endif %} {{ issue.titleSliced|raw }}</p>
