@@ -37,6 +37,12 @@ $app->register(new Silex\Provider\SessionServiceProvider());
 
 #$app['buzz'] = new Buzz\Browser(new Buzz\Client\Curl());
 
+$analytics = '';
+if (file_exists(__DIR__ . '/analytics.html')) {
+    $analytics = file_get_contents(__DIR__ . '/analytics.html');
+}
+$app["twig"]->addGlobal("analytics", $analytics);
+
 /**
  * Logout
  */
@@ -156,6 +162,7 @@ $app->get('/cards.pdf', function(Request $request) use($app, $cardMakerConfig) {
     $cardsPerPage       = $request->query->get('cardsPerPage', 8);
     $alignment          = $request->query->get('alignment', 'C');
     $milestones         = $request->query->get('milestones', array());
+    $titleMaxLength     = $request->query->get('titleMaxLength', 0);
 
     $url                = vsprintf('%s/projects/%d/issues?private_token=%s&per_page=100', array($gitlabPath, $projectId, $privateToken));
     $issues             = json_decode(file_get_contents($url));
@@ -188,6 +195,11 @@ $app->get('/cards.pdf', function(Request $request) use($app, $cardMakerConfig) {
             continue;
         }
 
+        $issue->titleSliced = html_entity_decode($issue->title);
+        if (0 < (int) $titleMaxLength) {
+            $issue->titleSliced = truncate($issue->title, (int) $titleMaxLength);
+        }
+
         // add to list
         $issuesClean[] = $app['twig']->render('issue.html.twig', array(
             'issue'     => $issue,
@@ -204,6 +216,7 @@ $app->get('/cards.pdf', function(Request $request) use($app, $cardMakerConfig) {
         'showNumbers'   => (!empty($showNumbers) ? 1 : 0),
         'cropmark'      => (!empty($cropmarks) ? 1 : 0),
         'alignment'     => $alignment,
+        'html'          => true,
     ));
 
     header('Content-type: application/pdf');
@@ -214,3 +227,10 @@ $app->get('/cards.pdf', function(Request $request) use($app, $cardMakerConfig) {
 ->bind('cards.pdf');
 
 return $app;
+
+function truncate($text, $length = 140) {
+    if(strlen($text) > $length) {
+        $text = substr($text, 0, strrpos($text,' ', $length - strlen($text)-3)) . '...';
+    }
+    return $text;
+}
