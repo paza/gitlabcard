@@ -3,6 +3,7 @@ A simple tool to create Cards from Gitlab Issues
 
 # Requirements
 - PHP
+- Composer, install instructions: http://getcomposer.org/download/
 - Gitlab
 - Cardmaker (optional, public service available under http://cardmaker.patrickzahnd.ch/cards.pdf)
 
@@ -13,12 +14,13 @@ The Software and Data in the vendor folder is distributed under its respective l
 
 # SETUP
 
-Install composer: http://getcomposer.org/download/
-
 ```sh
 # install dependencies
 composer install
 
 # create and modify config file
 cp config.php.dist config.php
+
+# Add analytics code to your installation (optional)
+cp src/analytics.html.dist src/analytics.html
 ```
